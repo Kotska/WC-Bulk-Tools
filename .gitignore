@@ -1,6 +1,8 @@
 # PHPUnit
 **/.phpunit.cache/
 **/.phpunit.result.cache
+/vendor
+composer.lock
 
 # IDE / editor
 .vscode/

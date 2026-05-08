@@ -1,0 +1,9 @@
+{
+    "require-dev": {
+        "phpunit/phpunit": "10"
+    },
+    "scripts": {
+        "test": "php tools\\phpunit --configuration=tests\\phpunit.xml.dist --display-skipped --display-incomplete",
+        "test-dev": "php tools\\phpunit --configuration=tests-dev\\phpunit.xml.dist --display-skipped --display-incomplete"
+    }
+}

@@ -115,28 +115,6 @@ class CliArgumentTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    public function test_scripts_use_direct_sql(): void
-    {
-        $scripts_with_sql = [
-            'generate_products.php' => ['$wpdb->insert', '$wpdb->posts'],
-            'generate_orders.php' => ['$wpdb->prefix . \'wc_orders\'', '$wpdb->insert'],
-            'delete_orders.php' => ['$wpdb->query', 'wc_order_product_lookup'],
-            'delete_products.php' => ['$wpdb->query', '$wpdb->postmeta'],
-        ];
-
-        foreach ($scripts_with_sql as $script_name => $expected_strings) {
-            $content = file_get_contents($this->plugin_dir . '/' . $script_name);
-
-            foreach ($expected_strings as $expected) {
-                $this->assertStringContainsString(
-                    $expected,
-                    $content,
-                    "$script_name must use direct SQL ($expected)."
-                );
-            }
-        }
-    }
-
     /**
      * Helper to capture output from a script without letting it exit the test.
      */

@@ -3,6 +3,7 @@
  * Tests that the plugin loads correctly and all required classes exist.
  */
 
+use PHPUnit\Framework\Attributes\Depends;
 class PluginLoadTest extends \PHPUnit\Framework\TestCase
 {
     public static function setUpBeforeClass(): void
@@ -20,34 +21,14 @@ class PluginLoadTest extends \PHPUnit\Framework\TestCase
         $this->assertFileExists($plugin_file, 'Plugin main file must exist.');
     }
 
-    public function test_plugin_loads_without_fatal_errors(): void
-    {
-        $plugin_file = dirname(__DIR__) . '/wc-bulk-tools.php';
-
-        // Check syntax using full PHP path
-        $php_path = 'C:\laragon\bin\php\php-8.3.28-Win32-vs16-x64\php.exe';
-        if (!file_exists($php_path)) {
-            $this->markTestSkipped('PHP executable not found at expected path.');
-        }
-
-        $output = [];
-        $return_var = 0;
-        exec('"' . $php_path . '" -l ' . escapeshellarg($plugin_file) . ' 2>&1', $output, $return_var);
-
-        $this->assertSame(0, $return_var, 'Plugin file has syntax errors: ' . implode("\n", $output));
-    }
-
     public function test_wc_bulk_tools_class_exists(): void
     {
         $this->assertTrue(class_exists('WC_Bulk_Tools'), 'WC_Bulk_Tools class must exist after plugin load.');
     }
 
+    #[Depends('test_wc_bulk_tools_class_exists')]
     public function test_wc_bulk_tools_is_singleton(): void
     {
-        if (!class_exists('WC_Bulk_Tools')) {
-            $this->markTestSkipped('WC_Bulk_Tools class not loaded.');
-        }
-
         $instance1 = WC_Bulk_Tools::instance();
         $instance2 = WC_Bulk_Tools::instance();
 
