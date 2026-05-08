@@ -1,6 +1,6 @@
 # PHPUnit
-tests/.phpunit.cache/
-tests/.phpunit.result.cache
+**/.phpunit.cache/
+**/.phpunit.result.cache
 
 # IDE / editor
 .vscode/
