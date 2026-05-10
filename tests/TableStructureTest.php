@@ -36,6 +36,21 @@ class TableStructureTest extends \PHPUnit\Framework\TestCase
         return preg_replace('/^(bigint|int|smallint|mediumint)\(\d+\)/', '$1', $type);
     }
 
+    /**
+     * Normalize datetime defaults that vary across MySQL versions.
+     * MySQL 5.x returns CURRENT_TIMESTAMP, MySQL 8 returns current_timestamp().
+     */
+    private static function normalizeDefault(?string $default): ?string
+    {
+        if ($default === null) {
+            return null;
+        }
+        if (preg_match('/^current_timestamp(\(\))?$/i', trim($default))) {
+            return 'CURRENT_TIMESTAMP';
+        }
+        return $default;
+    }
+
     private static function assertColumn(array $columns, string $name, string $type, string $null, mixed $default, string $extra = '', array $alternateDefaults = []): void
     {
         self::assertArrayHasKey($name, $columns, "Column `$name` not found.");
@@ -47,7 +62,11 @@ class TableStructureTest extends \PHPUnit\Framework\TestCase
 
         self::assertSame($null, $col->Null, "Column `$name`: expected Null='$null', got '$col->Null'.");
 
-        $defaultsOk = ($default === $col->Default) || in_array($col->Default, $alternateDefaults, true);
+        $actualDefault = self::normalizeDefault($col->Default);
+        $expectedDefault = self::normalizeDefault($default);
+        $normalizedAlts = array_map([self::class, 'normalizeDefault'], $alternateDefaults);
+
+        $defaultsOk = $expectedDefault === $actualDefault || in_array($actualDefault, $normalizedAlts, true);
         self::assertTrue($defaultsOk, "Column `$name`: expected Default=" . var_export($default, true) . ", got " . var_export($col->Default, true) . ".");
 
         if ($extra) {

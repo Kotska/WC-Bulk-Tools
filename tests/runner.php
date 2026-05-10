@@ -46,6 +46,18 @@ function normalize_type(string $type): string
     return preg_replace('/^(bigint|int|smallint|mediumint)\(\d+\)/', '$1', $type);
 }
 
+function normalize_default($default)
+{
+    if ($default === null) {
+        return null;
+    }
+    // Normalize CURRENT_TIMESTAMP / current_timestamp() across MySQL versions
+    if (is_string($default) && preg_match('/^current_timestamp(\(\))?$/i', trim($default))) {
+        return 'CURRENT_TIMESTAMP';
+    }
+    return $default;
+}
+
 function column_test(array $columns, string $name, string $type, string $null, $default, string $extra = '', array $alternate_defaults = []): bool
 {
     if (!isset($columns[$name])) {
@@ -66,12 +78,12 @@ function column_test(array $columns, string $name, string $type, string $null, $
         echo "        Null mismatch for `$name`: expected '$null', got '$col->Null'\n";
         $ok = false;
     }
-    // Compare defaults — allow alternate values (e.g. CURRENT_TIMESTAMP vs NULL for datetime)
-    $expected_default = $default;
-    $actual_default = $col->Default;
-    $defaults_ok = ($expected_default === $actual_default) || in_array($actual_default, $alternate_defaults, true);
+    $expected_default = normalize_default($default);
+    $actual_default = normalize_default($col->Default);
+    $normalized_alts = array_map('normalize_default', $alternate_defaults);
+    $defaults_ok = ($expected_default === $actual_default) || in_array($actual_default, $normalized_alts, true);
     if (!$defaults_ok) {
-        echo "        Default mismatch for `$name`: expected " . var_export($expected_default, true) . ", got " . var_export($actual_default, true) . "\n";
+        echo "        Default mismatch for `$name`: expected " . var_export($default, true) . ", got " . var_export($col->Default, true) . "\n";
         $ok = false;
     }
     if ($extra && stripos($col->Extra, $extra) === false) {
