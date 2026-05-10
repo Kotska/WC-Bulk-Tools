@@ -188,7 +188,7 @@ class TableStructureTest extends \PHPUnit\Framework\TestCase
         self::assertColumn($columns, 'product_id', 'bigint(20) unsigned', 'NO', null);
         self::assertColumn($columns, 'variation_id', 'bigint(20) unsigned', 'NO', null);
         self::assertColumn($columns, 'customer_id', 'bigint(20) unsigned', 'YES', null);
-        self::assertColumn($columns, 'date_created', 'datetime', 'NO', null, '', ['CURRENT_TIMESTAMP']);
+        self::assertColumn($columns, 'date_created', 'datetime', 'NO', null, '', ['CURRENT_TIMESTAMP', '1970-01-01 00:00:00']);
         self::assertColumn($columns, 'product_qty', 'int(11)', 'NO', null);
         self::assertColumn($columns, 'product_net_revenue', 'double', 'NO', '0');
         self::assertColumn($columns, 'product_gross_revenue', 'double', 'NO', '0');
