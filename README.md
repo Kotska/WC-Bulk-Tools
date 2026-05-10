@@ -77,6 +77,37 @@ Customers: 120
 - Products and orders are generated with minimal, test-oriented data.
 - Always take a database backup before running delete commands.
 
+## Running Tests
+
+The project includes two test suites and a standalone runner:
+
+### Unit tests (`tests/`)
+
+Requires WordPress + WooCommerce loaded. Uses PHPUnit 10 via the bundled PHAR.
+
+```sh
+php tools/phpunit --configuration=tests/phpunit.xml.dist
+```
+
+### Table structure tests
+
+Standalone runner that validates HPOS and lookup table schemas without PHPUnit:
+
+```sh
+php tests/runner.php
+```
+
+### Integration & WP-CLI tests (`tests-dev/`)
+
+Requires WordPress, WooCommerce, and WP-CLI. Composer dev dependencies must be installed first:
+
+```sh
+composer install
+php tools/phpunit --configuration=tests-dev/phpunit.xml.dist
+```
+
+The `tests-dev` suite verifies WP-CLI command registration, argument handling, and data roundtrip correctness.
+
 ## AI Tools
 
 This repository was developed with the assistance of AI tools (Claude, ChatGPT) for code generation, refactoring, and documentation. All AI-generated code has been reviewed and tested before inclusion.
