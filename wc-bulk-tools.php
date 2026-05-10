@@ -36,6 +36,8 @@ if (!class_exists(WC_Bulk_Tools::class)) {
             WP_CLI::add_command('wc-bulk delete products', $self->delete_products(...));
             WP_CLI::add_command('wc-bulk delete orders', $self->delete_orders(...));
             WP_CLI::add_command('wc-bulk count', $self->count_stats(...));
+            WP_CLI::add_command('wc-bulk test', $self->run_tests(...));
+            WP_CLI::add_command('wc-bulk test-dev', $self->run_dev_tests(...));
         }
 
         public function generate_products($args, $assoc_args): void
@@ -99,6 +101,42 @@ if (!class_exists(WC_Bulk_Tools::class)) {
             WP_CLI::log("Products:  {$stats['products']}");
             WP_CLI::log("Orders:    {$stats['orders']}");
             WP_CLI::log("Customers: {$stats['customers']}");
+        }
+
+        public function run_tests(): void
+        {
+            $plugin_dir = __DIR__;
+            $phpunit = $plugin_dir . '/tools/phpunit';
+            $config  = $plugin_dir . '/tests/phpunit.xml.dist';
+
+            $this->exec_phpunit($phpunit, $config);
+        }
+
+        public function run_dev_tests(): void
+        {
+            $plugin_dir = __DIR__;
+            $phpunit = $plugin_dir . '/tools/phpunit';
+            $config  = $plugin_dir . '/tests-dev/phpunit.xml.dist';
+
+            $this->exec_phpunit($phpunit, $config);
+        }
+
+        private function exec_phpunit(string $phpunit, string $config): void
+        {
+            $cmd = sprintf('php %s --configuration=%s 2>&1', escapeshellarg($phpunit), escapeshellarg($config));
+            WP_CLI::log("Command: php tools/phpunit --configuration=" . basename(dirname($config)) . "/phpunit.xml.dist");
+
+            $output = [];
+            $return_var = 0;
+            exec($cmd, $output, $return_var);
+
+            WP_CLI::log(implode("\n", $output));
+
+            if ($return_var === 0) {
+                WP_CLI::success('Tests passed.');
+            } else {
+                WP_CLI::error('Tests failed.', false);
+            }
         }
 
         private function build_argv(string $command, array $assoc_args): array
