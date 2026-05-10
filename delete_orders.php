@@ -77,9 +77,21 @@ try {
 
     // Delete order metadata
     echo "Deleting order metadata...\n";
-    $wpdb->query("DELETE FROM {$wpdb->prefix}wc_order_meta");
+    $wpdb->query("DELETE FROM {$wpdb->prefix}wc_orders_meta");
     $meta_count = $wpdb->rows_affected;
     echo "✓ Deleted $meta_count meta entries\n";
+
+    // Delete order stats (analytics)
+    echo "Deleting order stats...\n";
+    $wpdb->query("DELETE FROM {$wpdb->prefix}wc_order_stats");
+    $stats_count = $wpdb->rows_affected;
+    echo "✓ Deleted $stats_count order stats rows\n";
+
+    // Delete customer lookup
+    echo "Deleting customer lookup...\n";
+    $wpdb->query("DELETE FROM {$wpdb->prefix}wc_customer_lookup");
+    $cust_lookup_count = $wpdb->rows_affected;
+    echo "✓ Deleted $cust_lookup_count customer lookup rows\n";
 
     // Delete orders
     echo "Deleting orders...\n";

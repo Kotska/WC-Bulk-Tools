@@ -36,4 +36,15 @@ class WpCliTest extends \PHPUnit\Framework\TestCase
         $delete_orders = file_get_contents($plugin_dir . '/delete_orders.php');
         $this->assertStringContainsString('--force', $delete_orders, 'delete_orders.php must accept --force argument.');
     }
+
+    #[Depends('test_wp_cli_is_available')]
+    public function test_count_command_outputs_stats(): void
+    {
+        $output = shell_exec('wp wc-bulk count 2>&1');
+        $this->assertNotNull($output, 'Command should produce output.');
+
+        $this->assertStringContainsString('Products:', $output);
+        $this->assertStringContainsString('Orders:', $output);
+        $this->assertStringContainsString('Customers:', $output);
+    }
 }

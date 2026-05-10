@@ -57,8 +57,26 @@ Deletes all orders from HPOS tables (`wc_orders`, `wc_order_addresses`, `wc_orde
 |------|-------------|
 | `--force` | Skip confirmation prompt |
 
+### Count
+
+```sh
+wp wc-bulk count
+```
+
+Displays the current number of products, orders, and customers in the store.
+
+```
+Products:  1500
+Orders:    850
+Customers: 120
+```
+
 ## Notes
 
 - All operations use direct SQL (`$wpdb`) — WooCommerce hooks, validation, and stock management are bypassed.
 - Products and orders are generated with minimal, test-oriented data.
 - Always take a database backup before running delete commands.
+
+## AI Tools
+
+This repository was developed with the assistance of AI tools (Claude, ChatGPT) for code generation, refactoring, and documentation. All AI-generated code has been reviewed and tested before inclusion.
